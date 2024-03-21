@@ -4,6 +4,7 @@ from datetime import datetime
 
 path = "Infra/PDFs/"
 fileNames = ManagerFiles.getFileNamesPdfs()
+totalBD = {}
 bd = {
     "Dados da Companhia": {
         "info": {}
@@ -133,6 +134,9 @@ def mostrarInformacoes(bd):
             print(f"{secao}: {subsecoes}")
         print("=" * 30)
 
-for i in fileNames:
-    getInfoPDF(i)
+for x in fileNames:
+    getInfoPDF(x)
+    totalBD[x] = bd
+
+print(totalBD)
 
