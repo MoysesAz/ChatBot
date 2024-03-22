@@ -18,19 +18,18 @@ class ProcessFinancialPdf:
         }
         self.title = ""
         self.state = 0
-        self.line = []
-        self.refactorLine = []
+        self.line = ["", "", "", "", "", "", ""]
+        self.refactorLine = ["", "", "", "", "", "", ""]
         self.__composeStates = {
-            0: [self.switchToStateBalanceSheet, self.fillTableCompanyData],
-            1: [self.switchToStateResultDemonstration, self.fillTableBalanceSheet],
-            2: [self.switchToStateCashFlowStatement, self.fillTableResultDemonstration],
-            3: [self.switchToStateShareholdingPosition, self.fillTableCashFlowStatement],
-            4: [self.switchToStateFinishShareholdingPosition, self.fillTableShareHoldingPosition()],
-            5: [self.switchToStateDataOutstandingShares, lambda: None],
-            6: [self.switchToStateShareCapital, self.fillTableOutstandingShares],
-            7: [lambda: False, self.fillTableShareCapital],
+            0: [[], self.switchToStateBalanceSheet, self.fillTableCompanyData],
+            1: [[0, 2], self.switchToStateResultDemonstration, self.fillTableBalanceSheet],
+            2: [[0, 2], self.switchToStateCashFlowStatement, self.fillTableResultDemonstration],
+            3: [[0, 2], self.switchToStateShareholdingPosition, self.fillTableCashFlowStatement],
+            4: [[0, 3], self.switchToStateFinishShareholdingPosition, self.fillTableShareHoldingPosition],
+            5: [[], self.switchToStateDataOutstandingShares, lambda: None],
+            6: [[0, 2], self.switchToStateShareCapital, self.fillTableOutstandingShares],
+            7: [[],lambda: False, self.fillTableShareCapital],
         }
-
     def processPDF(self):
         with pdfplumber.open(self.__path + self.pdf_name) as pdf:
             for page in pdf.pages:
@@ -39,63 +38,19 @@ class ProcessFinancialPdf:
                     for line in table:
                         self.line = line
                         self.handler_state()
-
-        print(self.__cache)
     def handler_state(self):
-        if self.state == 0:
-            if self.switchToStateBalanceSheet() == True:
+        if self.state in self.__composeStates:
+            settings_treating_line, switch_function, fill_function = self.__composeStates[self.state]
+            if settings_treating_line != []:
+                self.treating_line(settings_treating_line)
+            if switch_function():
                 return
-            self.fillTableCompanyData()
-
-        if self.state == 1:
-            self.refactorLine = self.line[0].rsplit(" ", 2)
-
-            if self.switchToStateResultDemonstration() == True:
-                return
-
-            self.fillTableBalanceSheet()
-
-        if self.state == 2:
-            self.refactorLine = self.line[0].rsplit(" ", 2)
-
-            if self.switchToStateCashFlowStatement() == True:
-                return
-
-            self.fillTableResultDemonstration()
-
-        if self.state == 3:
-            self.refactorLine = self.line[0].rsplit(" ", 2)
-
-            if self.switchToStateShareholdingPosition() == True:
-                return
-
-            self.fillTableCashFlowStatement()
-
-        if self.state == 4:
-            self.refactorLine = self.line[0].rsplit(" ", 3)
-
-            if self.switchToStateFinishShareholdingPosition() == True:
-                return
-
-            self.fillTableShareHoldingPosition()
-
-        if self.state == 5:
-            if self.switchToStateDataOutstandingShares() == True:
-                return
-            pass
-
-        if self.state == 6:
-            self.refactorLine = self.line[0].rsplit(" ", 2)
-
-            if self.switchToStateShareCapital() == True:
-                return
-            self.fillTableOutstandingShares()
-
-        if self.state == 7:
-            self.refactorLine = self.line[0].split(" ")
-            self.fillTableShareCapital()
-
-
+            fill_function()
+    def treating_line(self, settings_treating_line):
+        if settings_treating_line[1] == 0:
+            self.refactorLine = self.line[settings_treating_line[0]].rsplit(" ")
+        else:
+            self.refactorLine = self.line[settings_treating_line[0]].rsplit(" ", settings_treating_line[1])
     def fillTableCompanyData(self):
         self.__cache["Dados da Companhia"]["csv"][self.line[0]] = self.line[1]
     def fillDateInEconomicData(self):
