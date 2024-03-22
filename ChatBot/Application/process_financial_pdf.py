@@ -1,9 +1,9 @@
 import pdfplumber
 from datetime import datetime
 class ProcessFinancialPdf:
-    def __init__(self, pdf_name):
-        self.__path = "Infra/PDFs/"
-        self.pdf_name = pdf_name
+    def __init__(self, path):
+        self.__path = "../Infra/PDFs/"
+        self.path = path
         self.__cache = {
             "Dados da Companhia": {"csv": {}},
             "Dados Econômico-Financeiros - R$ - mil": {
@@ -31,7 +31,7 @@ class ProcessFinancialPdf:
             7: [[0, 2],lambda: False, self.fillTableShareCapital],
         }
     def processPDF(self):
-        with pdfplumber.open(self.__path + self.pdf_name) as pdf:
+        with pdfplumber.open(self.path) as pdf:
             for page in pdf.pages:
                 tables = page.extract_tables()
                 for table in tables:
