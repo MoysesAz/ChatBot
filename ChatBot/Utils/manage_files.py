@@ -1,6 +1,7 @@
 import os
 
-class ManagerFiles:
+class ManagerFilesPDF:
+    directory = 'Infra/PDFs'
     @staticmethod
     def getFileNamesPdfs():
         directory = 'Infra/PDFs'
