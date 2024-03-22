@@ -28,7 +28,7 @@ class ProcessFinancialPdf:
             4: [[0, 3], self.switchToStateFinishShareholdingPosition, self.fillTableShareHoldingPosition],
             5: [[], self.switchToStateDataOutstandingShares, lambda: None],
             6: [[0, 2], self.switchToStateShareCapital, self.fillTableOutstandingShares],
-            7: [[],lambda: False, self.fillTableShareCapital],
+            7: [[0, 2],lambda: False, self.fillTableShareCapital],
         }
     def processPDF(self):
         with pdfplumber.open(self.__path + self.pdf_name) as pdf:
@@ -41,10 +41,10 @@ class ProcessFinancialPdf:
     def handler_state(self):
         if self.state in self.__composeStates:
             settings_treating_line, switch_function, fill_function = self.__composeStates[self.state]
-            if settings_treating_line != []:
-                self.treating_line(settings_treating_line)
             if switch_function():
                 return
+            if settings_treating_line != []:
+                self.treating_line(settings_treating_line)
             fill_function()
     def treating_line(self, settings_treating_line):
         if settings_treating_line[1] == 0:
@@ -145,3 +145,6 @@ class ProcessFinancialPdf:
     def fillTableShareCapital(self):
         pathBD = self.__cache["Composição do Capital Social"]["csv"]
         pathBD[self.refactorLine[0]] = self.refactorLine[1]
+
+    def getPdfInDict(self):
+        return self.__cache
