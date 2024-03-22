@@ -1,8 +1,10 @@
-from Application.create_financial_json import CreateFinancialJson
-from Utils.create_json import CreateJson
+import json
+import csv
 
-createFinancialJson = CreateFinancialJson()
-createFinancialJson.generateFinancialJSON()
-financialJson = createFinancialJson.get_financialJson()
-CreateJson(financialJson, "Infra/BD/Financial.json")
+path = "Infra/BD/Financial.json"
 
+with open(path, 'r') as file:
+    financialJson = json.load(file)
+
+
+print(financialJson)
