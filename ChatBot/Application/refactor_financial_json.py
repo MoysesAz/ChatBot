@@ -30,9 +30,8 @@ class RefactorFinancialJson:
                 else:
                     company_data.update(bd[key_bd]['csv'])
 
-            consolidated_data = {}
-            consolidated_data[company_name] = {"info": company_data, 'Posição Acionária*': shareholder_position}
-
+                consolidated_data = {}
+                consolidated_data[company_name] = {"info": company_data, 'Posição Acionária*': shareholder_position}
         self.__refactorFinancialJson = consolidated_data
 
     def getRefactorFinancialJson(self):

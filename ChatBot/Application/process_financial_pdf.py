@@ -45,6 +45,7 @@ class ProcessFinancialPdf:
             if settings_treating_line != []:
                 self.treating_line(settings_treating_line)
             fill_function()
+
     def treating_line(self, settings_treating_line):
         if settings_treating_line[1] == 0:
             self.refactorLine = self.line[settings_treating_line[0]].rsplit(" ")
